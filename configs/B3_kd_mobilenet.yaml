@@ -1,0 +1,46 @@
+# configs/B3_kd_mobilenet.yaml
+# Configuration B3: Knowledge Distillation to MobileNetV3-Small
+# Efficiency vertex of Pareto frontier — preferred when γ ≥ 0.5
+# Result: F1=0.891, 4.2 MB, 96 ms — DFZ qualified, efficiency-dominant
+
+_base_: base.yaml
+config_id: B3
+group: compress
+strategy: "KD→MobileNetV3"
+description: >
+  Knowledge distillation: DenseNet-121 (A2) teacher →
+  MobileNetV3-Small student. T=4, λ=0.7 (Hinton et al. defaults,
+  NOT tuned — deliberate controlled-comparison design per Section 6.3).
+  Efficiency vertex: optimal in 8/36 ternary sensitivity combinations
+  (γ ≥ 0.5 efficiency-dominant scenarios).
+
+model:
+  backbone: mobilenet_v3_small
+  pretrained: true
+  head:
+    dropout: 0.2
+
+augmentation:
+  method: m7_3d_aware
+
+compression:
+  method: kd_mobilenet
+  teacher_backbone: densenet121
+  teacher_checkpoint: outputs/A2/A2_final.pt
+  temperature: 4.0
+  lambda_soft: 0.7
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.891
+  f1_ci: [0.856, 0.926]
+  sensitivity: 89.8
+  eod_gender: 3.1
+  eod_ethnicity: 5.0
+  size_mb: 4.2
+  latency_e3_ms: 96
+  dfz: true
+  pareto: true
+  pareto_role: "efficiency_vertex"

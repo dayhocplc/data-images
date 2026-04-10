@@ -1,0 +1,87 @@
+# configs/base.yaml
+# Shared hyperparameters across ALL 11 configurations
+# Per paper Section 4.3: "Configuration-specific hyperparameter tuning
+# was deliberately withheld to provide a controlled comparison"
+
+# ── Model ──────────────────────────────────────────────────────────────────
+model:
+  backbone: densenet121          # DenseNet-121 [Huang et al. CVPR 2017]
+  pretrained: true               # ImageNet pretrained
+  head:
+    pooling: global_avg
+    dropout: 0.5
+    activation: sigmoid
+    num_classes: 1               # Binary: ASD vs non-ASD
+
+# ── Dataset ────────────────────────────────────────────────────────────────
+data:
+  root: data/processed
+  image_size: [224, 224]
+  normalize:
+    mean: [0.485, 0.456, 0.406]  # ImageNet statistics
+    std:  [0.229, 0.224, 0.225]
+  split:
+    train: 0.80                  # 2258 images
+    val:   0.10                  # 281 images
+    test:  0.10                  # 282 images — accessed ONCE per config
+    seed:  42                    # Fixed for reproducibility
+    stratify: [label, gender, ethnicity, age_group]
+
+# ── Protected attributes ────────────────────────────────────────────────────
+fairness:
+  attributes: [gender, ethnicity]
+  majority:
+    gender: male
+    ethnicity: white
+  tau_fair: 0.10                 # Per-attribute EOD hard constraint (Eq. 8b)
+  tau_acc:  0.85                 # F1 hard constraint (Eq. 8a)
+
+# ── Training ───────────────────────────────────────────────────────────────
+training:
+  optimizer: adamw
+  lr: 1.0e-4
+  lr_min: 1.0e-5
+  lr_scheduler: cosine_annealing
+  weight_decay: 0.01
+  batch_size: 32
+  loss: bce_balanced             # BCE with balanced class weights
+  max_epochs: 150
+  early_stopping:
+    monitor: val_f1
+    patience: 10
+    mode: max
+  seed: 42
+  device: cuda
+
+# ── Hardware benchmark ──────────────────────────────────────────────────────
+hardware:
+  environments:
+    E1:
+      name: NVIDIA RTX 3080 Ti
+      type: gpu
+    E2:
+      name: Xiaomi Mi 11 (Snapdragon 888)
+      type: mobile_high
+    E3:
+      name: Redmi Note 11 (Helio G88)
+      type: mobile_entry          # Constraint-binding environment
+  latency_constraint_env: E3     # T* evaluated on E3 (8d)
+  latency_warmup_passes: 20
+  latency_measurement_passes: 500
+  size_constraint_mb: 10.0       # S* = 10 MB (8c)
+  latency_constraint_ms: 300.0   # T* = 300 ms (8d)
+  tflite_format: true            # Size measured post-TFLite conversion
+
+# ── Logging ────────────────────────────────────────────────────────────────
+logging:
+  project: trilemma_benchmark
+  log_every_n_steps: 10
+  save_dir: outputs/
+
+# ── Evaluation ─────────────────────────────────────────────────────────────
+evaluation:
+  bootstrap_n: 1000              # Bootstrap CI iterations
+  bootstrap_ci: 0.95             # 95% CI
+  cv_folds: 5                    # 5-fold cross-validation
+  statistical_test: wilcoxon     # Pairwise comparison test
+  correction: holm_bonferroni    # Multiple comparison correction

@@ -1,0 +1,36 @@
+# configs/B4_pfp_int8.yaml
+# Configuration B4: PFP + INT8 (maximum efficiency pipeline)
+# Sequential: PFP (80%) then INT8 quantization
+# Result: F1=0.887, 3.1 MB, 91 ms — DFZ qualified, smallest/fastest
+
+_base_: base.yaml
+config_id: B4
+group: compress
+strategy: "PFP + INT8"
+description: >
+  Maximum efficiency: sequential PFP (80% sparsity) then INT8 quantization.
+  Achieves smallest model (3.1 MB) and lowest latency (91 ms) among
+  DFZ-qualified configurations. Preferred when γ ≥ 0.5.
+
+augmentation:
+  method: m1_basic
+
+compression:
+  method: pfp_int8
+  pfp_sparsity: 0.80
+  pfp_eod_threshold: 0.08
+  int8_calibration_samples: 200
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.887
+  f1_ci: [0.851, 0.923]
+  sensitivity: 89.2
+  eod_gender: 2.3
+  eod_ethnicity: 4.0
+  size_mb: 3.1
+  latency_e3_ms: 91
+  dfz: true
+  pareto: true

@@ -1,0 +1,42 @@
+# configs/B1_pfp.yaml
+# Configuration B1: Protected Fairness Pruning (compress-only)
+# DFZ-qualified: F1=0.904, EOD_gender=2.1%, 6.3 MB, 187 ms
+# Pareto-optimal: strictly dominates A3 at identical efficiency
+
+_base_: base.yaml
+config_id: B1
+group: compress
+strategy: "PFP"
+description: >
+  Protected Fairness Pruning at 80% sparsity with per-neuron
+  EOD impact check (δ=0.08). Applied to A1 (basic aug) model.
+  Pareto-dominates standard pruning (A3) at identical size/latency.
+  ATWS enabled — B1+ATWS vs B1-fixed: +0.013 F1, -0.7pp EOD_gender.
+
+augmentation:
+  method: m1_basic
+
+compression:
+  method: pfp
+  sparsity: 0.80
+  eod_threshold: 0.08
+  iterative: true
+  applied_to: A1_pretrained
+
+training:
+  atws: true
+  atws_phases:
+    phase1: {end_fraction: 0.40, weights: {alpha: 0.7, beta: 0.2, gamma: 0.1}}
+    phase2: {end_fraction: 0.70, weights: {alpha: 0.4, beta: 0.4, gamma: 0.2}}
+    phase3: {end_fraction: 1.00, weights: {alpha: 0.3, beta: 0.4, gamma: 0.3}}
+
+expected_results:
+  f1: 0.904
+  f1_ci: [0.871, 0.937]
+  sensitivity: 91.7
+  eod_gender: 2.1
+  eod_ethnicity: 3.9
+  size_mb: 6.3
+  latency_e3_ms: 187
+  dfz: true
+  pareto: true

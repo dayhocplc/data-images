@@ -1,0 +1,41 @@
+# configs/A2_3d_aug.yaml
+# Configuration A2: 3D-Aware Augmentation (M7) — uncompressed
+# Pareto-optimal but DFZ excluded: size=27.8 MB > 10 MB constraint
+# Result: F1=0.946, EOD_gender=2.1%, 27.8 MB — Pareto-optimal, DFZ excluded
+
+_base_: base.yaml
+config_id: A2
+group: baseline
+strategy: "3D-Aware Aug (M7)"
+description: >
+  DECA/FLAME 3D augmentation with minority-stratified oversampling.
+  10 variants/image (5 poses × 2 expressions), β_shape preserved.
+  Pareto-optimal: anchors accuracy-fairness vertex of the frontier.
+  DFZ excluded due to size constraint (27.8 MB > 10 MB).
+
+augmentation:
+  method: m7_3d_aware
+  variants_per_image: 10
+  pose_variants: 5
+  expression_variants: 2
+  preserve_shape: true
+  minority_stratified: true
+  augment_split: train_only
+
+compression:
+  method: none
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.946
+  f1_ci: [0.921, 0.971]
+  sensitivity: 94.1
+  eod_gender: 2.1
+  eod_ethnicity: 3.9
+  size_mb: 27.8
+  latency_e3_ms: 214
+  dfz: false
+  pareto: true
+  pareto_role: "accuracy_fairness_vertex"

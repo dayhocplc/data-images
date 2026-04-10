@@ -1,0 +1,40 @@
+# configs/C4_m1_pfp.yaml
+# Configuration C4: M1 + PFP (data quality ablation)
+# Isolates the contribution of 3D-aware augmentation vs 2D baseline
+# Compare with C2 (M7+PFP): ΔF1=+0.063 (p=0.001, d=1.78) — 3D aug is dominant driver
+
+_base_: base.yaml
+config_id: C4
+group: combined
+strategy: "M1 + PFP"
+description: >
+  Baseline 2D augmentation + Protected Fairness Pruning.
+  Ablation configuration: same compression as C2 but with 2D (M1)
+  instead of 3D-aware (M7) augmentation.
+  Result: F1=0.871, 6.3 MB — DFZ qualified but substantially weaker.
+  Statistical comparison vs C2: ΔF1=+0.063, p=0.001, d=1.78 (large effect).
+  Confirms: 3D-aware augmentation is the dominant accuracy driver in C2.
+
+augmentation:
+  method: m1_basic
+
+compression:
+  method: pfp
+  sparsity: 0.80
+  eod_threshold: 0.08
+  applied_to: A1_pretrained
+
+training:
+  atws: true
+
+expected_results:
+  f1: 0.871
+  f1_ci: [0.833, 0.909]
+  sensitivity: 87.5
+  eod_gender: 2.4
+  eod_ethnicity: 4.1
+  size_mb: 6.3
+  latency_e3_ms: 187
+  dfz: true
+  pareto: false
+  note: "Data quality ablation — compare with C2 to quantify 3D aug contribution"

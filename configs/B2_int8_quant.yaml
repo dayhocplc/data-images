@@ -1,0 +1,36 @@
+# configs/B2_int8_quant.yaml
+# Configuration B2: INT8 Post-Training Quantization
+# Applied to A2 (3D-augmented) model
+# Result: F1=0.919, EOD_gender=2.4%, 7.1 MB, 142 ms — DFZ qualified
+
+_base_: base.yaml
+config_id: B2
+group: compress
+strategy: "INT8 Quant."
+description: >
+  Post-training static INT8 quantization (float32→int8).
+  Calibrated on 200-image subset. Applied to A2 model.
+  Consistent with Hooker et al.: INT8 quantization causes
+  less fairness degradation than magnitude pruning.
+
+augmentation:
+  method: m7_3d_aware
+
+compression:
+  method: int8
+  calibration_samples: 200
+  applied_to: A2_pretrained
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.919
+  f1_ci: [0.888, 0.950]
+  sensitivity: 92.0
+  eod_gender: 2.4
+  eod_ethnicity: 4.2
+  size_mb: 7.1
+  latency_e3_ms: 142
+  dfz: true
+  pareto: true

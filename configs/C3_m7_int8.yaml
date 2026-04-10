@@ -1,0 +1,39 @@
+# configs/C3_m7_int8.yaml
+# Configuration C3: M7 + INT8 (accuracy-leaning DFZ configuration)
+# Near-equivalent to C2 on F1 (0.938 vs 0.934), slightly higher EOD
+# Result: F1=0.938, EOD_gender=2.2%, 7.1 MB, 142 ms — DFZ qualified
+
+_base_: base.yaml
+config_id: C3
+group: combined
+strategy: "M7 + INT8"
+description: >
+  3D-aware augmentation (A2 pipeline) + INT8 quantization.
+  Achieves marginally higher F1 than C2 (0.938 vs 0.934) but
+  with slightly higher EOD_gender (2.2% vs 2.0%).
+  C3 does NOT dominate C2 given overlapping CIs.
+  C3 is knee point in 5.8% of bootstrap resamples (vs 94.2% for C2).
+  Preferred when accuracy is primary (α-heavy weighting).
+
+augmentation:
+  method: m7_3d_aware
+
+compression:
+  method: int8
+  calibration_samples: 200
+  applied_to: A2_pretrained
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.938
+  f1_ci: [0.911, 0.965]
+  sensitivity: 94.0
+  eod_gender: 2.2
+  eod_ethnicity: 3.8
+  size_mb: 7.1
+  latency_e3_ms: 142
+  dfz: true
+  pareto: true
+  pareto_role: "accuracy_leaning"

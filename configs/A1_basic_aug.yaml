@@ -1,0 +1,28 @@
+# configs/A1_basic_aug.yaml
+# Configuration A1: Basic 2D Augmentation — lower bound baseline
+# Result: F1=0.506, EOD_gender=12.1%, 27.8 MB — DFZ excluded (size + EOD)
+
+_base_: base.yaml
+config_id: A1
+group: baseline
+strategy: "Basic 2D-Aug (M1)"
+description: >
+  Rotation ±10°, Gaussian noise σ=0.01, brightness [0.8,1.2].
+  No compression, no fairness constraint. Establishes accuracy
+  lower bound. DFZ excluded due to size violation.
+
+augmentation:
+  method: m1_basic
+compression:
+  method: none
+training:
+  atws: false
+
+expected_results:
+  f1: 0.506
+  sensitivity: 48.7
+  eod_gender: 12.1
+  eod_ethnicity: 16.2
+  size_mb: 27.8
+  latency_e3_ms: 218
+  dfz: false

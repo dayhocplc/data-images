@@ -1,0 +1,38 @@
+# configs/C1_m7_std_prune.yaml
+# Configuration C1: M7 + Standard Pruning
+# Shows that 3D aug upstream CANNOT compensate for fairness-unconstrained compression
+# Result: F1=0.921, EOD_eth=10.8% — DFZ excluded (EOD_eth violation)
+
+_base_: base.yaml
+config_id: C1
+group: combined
+strategy: "M7 + Std. Pruning"
+description: >
+  3D-aware augmentation (A2 pipeline) followed by standard magnitude
+  pruning at 80% sparsity. Despite high accuracy (F1=0.921), fails
+  the per-attribute EOD constraint: EOD_eth=10.8% > τ_fair=10%.
+  Key finding: fairness-unconstrained compression undoes the fairness
+  gains from 3D-aware augmentation.
+
+augmentation:
+  method: m7_3d_aware
+
+compression:
+  method: std_pruning
+  sparsity: 0.80
+  fairness_constrained: false
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.921
+  f1_ci: [0.891, 0.951]
+  sensitivity: 92.4
+  eod_gender: 7.9
+  eod_ethnicity: 10.8
+  size_mb: 6.3
+  latency_e3_ms: 187
+  dfz: false
+  pareto: false
+  note: "DFZ excluded: EOD_eth=10.8% marginally exceeds τ_fair=10%"

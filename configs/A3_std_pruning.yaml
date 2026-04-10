@@ -1,0 +1,38 @@
+# configs/A3_std_pruning.yaml
+# Configuration A3: Standard Magnitude Pruning 80% — fairness-unconstrained
+# Pareto-DOMINATED by B1 (PFP) at identical compression ratio
+# Result: F1=0.874, EOD_gender=8.3%, EOD_eth=11.6% — DFZ excluded (EOD_eth > 10%)
+
+_base_: base.yaml
+config_id: A3
+group: baseline
+strategy: "Std. Pruning 80%"
+description: >
+  Magnitude-based unstructured pruning at 80% sparsity.
+  No fairness constraint — demonstrates that standard pruning
+  worsens EOD by removing low-magnitude minority-subgroup neurons.
+  Formally Pareto-dominated by B1 (PFP) at identical size/latency.
+  DFZ excluded: EOD_eth = 11.6% > τ_fair = 10%.
+
+augmentation:
+  method: m1_basic
+
+compression:
+  method: std_pruning
+  sparsity: 0.80
+  fairness_constrained: false
+  applied_to: A1_pretrained
+
+training:
+  atws: false
+
+expected_results:
+  f1: 0.874
+  sensitivity: 87.4
+  eod_gender: 8.3
+  eod_ethnicity: 11.6
+  size_mb: 6.3
+  latency_e3_ms: 187
+  dfz: false
+  pareto: false
+  note: "Pareto-dominated by B1 on all 3 axes"

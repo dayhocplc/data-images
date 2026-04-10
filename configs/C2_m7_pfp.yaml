@@ -1,0 +1,57 @@
+# configs/C2_m7_pfp.yaml
+# Configuration C2: M7 (3D-aware augmentation) + PFP
+# Pareto knee point — F1=0.934, EOD_gender=2.0%, 6.3 MB, 187 ms (E3)
+
+_base_: base.yaml
+
+config_id: C2
+group: combined
+strategy: "M7 + PFP"
+description: >
+  3D-aware augmentation (A2 pipeline) followed by Protected Fairness
+  Pruning. Jointly optimizes all three trilemma axes. Pareto knee point
+  confirmed in 94.2% of 1000 bootstrap resamples.
+
+augmentation:
+  method: m7_3d_aware            # DECA/FLAME parametric pipeline
+  variants_per_image: 10         # 5 poses × 2 expressions
+  pose_variants: 5               # yaw ∈ {-20°, -10°, 0°, +10°, +20°}
+  expression_variants: 2         # neutral + mild smile
+  preserve_shape: true           # β_shape fixed (biomarker preservation)
+  minority_stratified: true      # Oversample minority subgroups
+  augment_split: train_only      # NEVER augment val/test (leakage prevention)
+
+compression:
+  method: pfp                    # Protected Fairness Pruning
+  sparsity: 0.80                 # 80% weight sparsity
+  eod_threshold: 0.08            # δ: max allowed EOD increase per neuron (B.1)
+  iterative: true                # Iterative magnitude pruning with EOD check
+  applied_to: A1_pretrained      # Applied to A1-baseline model
+
+training:
+  atws: true                     # Enable Adaptive Trilemma Weight Scheduler
+  atws_phases:
+    phase1:
+      end_fraction: 0.40         # Epochs 1 – ⌊0.4E⌋
+      weights: {alpha: 0.7, beta: 0.2, gamma: 0.1}
+    phase2:
+      end_fraction: 0.70         # Epochs ⌊0.4E⌋ – ⌊0.7E⌋
+      weights: {alpha: 0.4, beta: 0.4, gamma: 0.2}
+    phase3:
+      end_fraction: 1.00         # Epochs ⌊0.7E⌋ – E
+      weights: {alpha: 0.3, beta: 0.4, gamma: 0.3}
+  atws_override_eod: 0.10        # β += 0.10 if val-EOD exceeds threshold
+  atws_override_f1:  0.80        # Reset to Phase I if val-F1 drops below
+  atws_override_f1_epochs: 5     # Duration of Phase I reset
+
+expected_results:                # From paper Table 3 (ATWS variant)
+  f1: 0.934
+  f1_ci: [0.906, 0.962]
+  sensitivity: 93.5
+  eod_gender: 2.0
+  eod_ethnicity: 3.7
+  size_mb: 6.3
+  latency_e3_ms: 187
+  dfz: true
+  pareto: true
+  pareto_role: knee_point
