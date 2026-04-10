@@ -8,8 +8,8 @@ Official implementation of:
 
 > **Formalizing the Accuracy–Fairness–Efficiency Trilemma in Mobile Image Classification:
 > A Pareto Benchmark for Demographic-Constrained Deployment**  
-> Tran Van Thanh · Nguyen Van An · Nguyen Van Anh  
-> Faculty of Information Technology, Lac Hong University, Bien Hoa, Vietnam
+> Tran Van Thanh and Lam Thanh Hien and Do Nang Toan and Huynh Tuan Tu  
+> Lac Hong University, Bien Hoa, Vietnam
 
 ---
 
@@ -94,7 +94,6 @@ trilemma/
 ## Installation
 
 ```bash
-git clone https://gitlab.com/your-username/trilemma.git
 cd trilemma
 pip install -e .
 ```
@@ -183,37 +182,18 @@ python scripts/pareto_analysis.py --results_dir outputs/
 
 ---
 
-## Key Results
-
-| Config | F1 | EOD_gender | EOD_eth | Size (MB) | Lat E3 (ms) | DFZ |
-|--------|----|-----------|---------|-----------|-------------|-----|
-| A1 | 0.506 | 12.1% | 16.2% | 27.8 | 218 | ✗ |
-| A2 | 0.946 | 2.1% | 3.9% | 27.8 | 214 | ✗* |
-| A3 | 0.874 | 8.3% | 11.6% | 6.3 | 187 | ✗ |
-| B1 | 0.904 | 2.1% | 3.9% | 6.3 | 187 | ✓ |
-| B2 | 0.919 | 2.4% | 4.2% | 7.1 | 142 | ✓ |
-| B3 | 0.891 | 3.1% | 5.0% | 4.2 | 96 | ✓ |
-| B4 | 0.887 | 2.3% | 4.0% | 3.1 | 91 | ✓ |
-| C1 | 0.921 | 7.9% | 10.8% | 6.3 | 187 | ✗ |
-| **C2** | **0.934** | **2.0%** | **3.7%** | **6.3** | **187** | **✓ (knee)** |
-| C3 | 0.938 | 2.2% | 3.8% | 7.1 | 142 | ✓ |
-| C4 | 0.871 | 2.4% | 4.1% | 6.3 | 187 | ✓ |
-
-*A2: Pareto-optimal but excluded from DFZ (size > 10 MB)
-
-DFZ thresholds: F1 ≥ 0.85, EOD < 10% per attribute, size ≤ 10 MB, latency ≤ 300 ms (E3)
 
 ---
 
 ## Citation
 
 ```bibtex
-@article{thanh2025trilemma,
+@article{thanh2026trilemma,
   title={Formalizing the Accuracy--Fairness--Efficiency Trilemma in Mobile
          Image Classification: A Pareto Benchmark for Demographic-Constrained Deployment},
-  author={Tran Van Thanh and Nguyen Van An and Nguyen Van Anh},
+  author={Tran Van Thanh and Lam Thanh Hien and Do Nang Toan and Huynh Tuan Tu},
   journal={arXiv preprint},
-  year={2025}
+  year={2026}
 }
 ```
 

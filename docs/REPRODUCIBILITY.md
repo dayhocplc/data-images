@@ -209,7 +209,7 @@ appears acceptable.
 @article{thanh2025trilemma,
   title={Formalizing the Accuracy--Fairness--Efficiency Trilemma in Mobile
          Image Classification: A Pareto Benchmark for Demographic-Constrained Deployment},
-  author={Tran Van Thanh and Nguyen Van An and Nguyen Van Anh},
+  author={Tran Van Thanh and Lam Thanh Hien and Do Nang Toan and Huynh Tuan Tu},
   journal={arXiv preprint arXiv:2025.XXXXX},
   year={2025}
 }
